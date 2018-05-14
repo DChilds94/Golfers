@@ -2,11 +2,12 @@ package db;
 
 import models.Golfer;
 import org.hibernate.HibernateException;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import java.util.List;
-import java.util.Queue;
+
 
 public class DBGolfer {
 
@@ -41,16 +42,48 @@ public class DBGolfer {
         return results;
     }
 
-//    public static void update(Golfer golfer){
-//        session = HibernateUtil.getSessionFactory().openSession();
-//        try {
-//            String hql = "update Golfer set age = :age where id = :id";
-//            session.update("id");
-//        } catch (HibernateException e) {
-//            transaction.rollback();
-//            e.printStackTrace();
-//        } finally {
-//            session.close();
-//        }
-//    }
-}
+    public static void delete(Golfer golfer){
+        session = HibernateUtil.getSessionFactory().openSession();
+        try {
+            transaction = session.beginTransaction();
+            session.delete(golfer);
+            transaction.commit();
+        } catch (HibernateException e) {
+            transaction.rollback();
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+    }
+
+    public static Golfer find(int id) {
+        session = HibernateUtil.getSessionFactory().openSession();
+        Golfer result = null;
+        try {
+            String hql = "from Golfer where id = :id";
+            Query query = session.createQuery(hql);
+            query.setInteger("id", id);
+            result = (Golfer) query.uniqueResult();
+        } catch (HibernateException e) {
+            transaction.rollback();
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+        return  result;
+    }
+
+        public static void update (Golfer golfer){
+            session = HibernateUtil.getSessionFactory().openSession();
+            try {
+                transaction = session.beginTransaction();
+                session.update(golfer);
+                transaction.commit();
+            } catch (HibernateException e) {
+                transaction.rollback();
+                e.printStackTrace();
+            } finally {
+                session.close();
+            }
+        }
+    }
